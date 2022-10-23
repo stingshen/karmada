@@ -2,6 +2,7 @@ package unifiedauth
 
 import (
 	"context"
+	"fmt"
 
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -149,6 +150,9 @@ func (c *Controller) buildImpersonationClusterRole(cluster *clusterv1alpha1.Clus
 }
 
 func (c *Controller) buildImpersonationClusterRoleBinding(cluster *clusterv1alpha1.Cluster) error {
+	if cluster.Spec.ImpersonatorSecretRef == nil {
+		return fmt.Errorf("cluster %s does not have an impersonator secret", cluster.Name)
+	}
 	impersonatorClusterRoleBinding := &rbacv1.ClusterRoleBinding{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: rbacAPIVersion,
